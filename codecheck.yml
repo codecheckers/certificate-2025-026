@@ -1,0 +1,26 @@
+---
+version: https://codecheck.org.uk/spec/config/1.0/
+paper:
+  title: "Automated validation of route instructions in indoor environments"
+  authors:
+    - name: Reza Arabsheibani
+      ORCID: 0000-0003-2224-3823
+    - name: Stephan Winter
+      ORCID: 0000-0002-3403-6939
+    - name: Martin Tomko
+      ORCID: 0000-0002-5736-4679
+  reference: https://doi.org/10.5311/JOSIS.2025.30.385
+
+manifest:
+  - file: geojson/Curated7/AEY.jpeg
+
+codechecker:
+  - name: Linus Dexter Hackel
+    ORCID: 0009-0000-0114-8005
+    
+summary: >
+  Until now only the basic codecheck.yml has been created.
+
+certificate: 2025-026
+
+repository: https://github.com/codecheckers/certificate-2025-026
