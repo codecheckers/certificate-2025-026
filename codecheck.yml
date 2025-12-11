@@ -1,5 +1,8 @@
 ---
 version: https://codecheck.org.uk/spec/config/1.0/
+report: https://doi.org/10.5281/zenodo.4720843
+certificate: 2025-026
+
 paper:
   title: "Automated validation of route instructions in indoor environments"
   authors:
@@ -13,14 +16,15 @@ paper:
 
 manifest:
   - file: geojson/Curated7/AEY.jpeg
+    comment: Just a random file from the provided code repository
 
 codechecker:
   - name: Linus Dexter Hackel
     ORCID: 0009-0000-0114-8005
     
-summary: >
+summary: |
   Until now only the basic codecheck.yml has been created.
 
-certificate: 2025-026
+check_time: "2025-12-11T19:27"
 
 repository: https://github.com/codecheckers/certificate-2025-026
