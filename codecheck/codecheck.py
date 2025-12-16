@@ -145,7 +145,7 @@ File&nbsp;&nbsp;&nbsp; | Comment&nbsp;&nbsp;&nbsp;&nbsp;&nbsp | Size (b)
             f"{self.conf['codechecker']['name']} "
             f"({datetime.fromisoformat(self.conf['check_time']).year}). "
             f"CODECHECK Certificate {self.conf['certificate']}. "
-            f"Zenodo. [{self.conf['report'].split('://')[1]}]({self.conf['report']})"
+            f"GitHub. [{self.conf['report'].split('://')[1]}]({self.conf['report']})"
         )
 
     def about_codecheck(self):

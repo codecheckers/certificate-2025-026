@@ -1,6 +1,6 @@
 ---
 version: https://codecheck.org.uk/spec/config/1.0/
-report: https://doi.org/10.5281/zenodo.4720843
+report: https://github.com/codecheckers/certificate-2025-026/
 certificate: 2025-026
 
 paper:
@@ -15,16 +15,16 @@ paper:
   reference: https://doi.org/10.5311/JOSIS.2025.30.385
 
 manifest:
-  - file: geojson/Curated7/AEY.jpeg
-    comment: Just a random file from the provided code repository
+  - file: data/RI/Route_Instructions_LongestShortest_length.csv
+    comment: The .csv file containing LSP routes and route instructions for all grammars.
 
 codechecker:
   - name: Linus Dexter Hackel
     ORCID: 0009-0000-0114-8005
     
 summary: |
-  Until now only the basic codecheck.yml has been created.
+  The check was not successfull so far as no Figure or Table could be reproduced, as most scripts provided are missing some input files, which aren't provided in the fishare repository.
 
-check_time: "2025-12-11T19:27"
+check_time: "2025-12-16T21:10"
 
 repository: https://github.com/codecheckers/certificate-2025-026

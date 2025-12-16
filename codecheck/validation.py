@@ -86,6 +86,10 @@ class CodecheckValidator:
                     suggestion="Add valid CODECHECK configuration to the file"
                 ))
                 return False
+            
+            # Only have one codechecker
+            self.config['codechecker'] = self.config['codechecker'][0]
+
             return True
         except FileNotFoundError:
             self.issues.append(ValidationIssue(

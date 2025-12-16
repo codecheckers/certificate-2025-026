@@ -10,4 +10,12 @@
 ((( super() )))
 \usepackage{fvextra}
 \DefineVerbatimEnvironment{Verbatim}{Verbatim}{fontsize=\footnotesize,breaklines=true}
+
+% Set a nice font family
+\usepackage[T1]{fontenc}   % Better font encoding
+\usepackage{lmodern}       % Latin Modern font (clean and readable)
+%\usepackage{mathpazo}     % Uncomment for Palatino
+%\usepackage{newtxtext,newtxmath} % Uncomment for Times-like font
+
+\renewcommand{\familydefault}{\rmdefault} % Use the serif font as default
 ((* endblock definitions *))
