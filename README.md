@@ -1,6 +1,7 @@
 # CODECHECK certificate 2025-026
 
-Repository for CODECHECK certificate 2025-026.
+Repository for CODECHECK certificate 2025-026.<br>
+Report: https://zenodo.org/records/{placeholder_identifier}
 
 Publication: [Automated validation of route instructions in indoor environments](https://doi.org/10.5311/JOSIS.2025.30.385)<br>
 Code Repository: https://doi.org/10.6084/m9.figshare.24208518
