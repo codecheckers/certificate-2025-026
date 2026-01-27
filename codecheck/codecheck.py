@@ -6,8 +6,9 @@ from datetime import datetime
 import os.path as op
 from pathlib import Path
 import yaml
-from IPython.display import Markdown, Latex
+from IPython.display import Markdown
 import pandas as pd
+import session_info2 as si
 
 from validation import CodecheckValidator
 from manifest import ManifestProcessor
@@ -15,8 +16,26 @@ from manifest import ManifestProcessor
 
 def name_orcid(entry):
     """Helper function for Name + ORCID"""
-    return f"{entry['name']} (ORCID: [{entry['ORCID']}](https://orcid.org/{entry['ORCID']}))"
+    if 'ORCID' in entry:
+        return f"{entry['name']} (ORCID: {entry['ORCID']})"
+    else:
+        return entry['name']
 
+def multiple_name_orcid(entries):
+    """Helper function for multiple people to return their Name + ORCID"""
+    return f"{', '.join([name_orcid(a) for a in entries])}"
+
+def multiple_name(entries):
+    """Helper function for multiple people to return their Name + ORCID"""
+    return f"{', '.join([a['name'] for a in entries])}"
+
+def url_link(url):
+    """Helper function to create Markdown links for the full URL with the protocol in front."""
+    return f"[{url}]({url})"
+
+def short_link(url):
+    """Helper function to create Markdown links for the short URL without the protocol in front."""
+    return f"[{url.split('://')[1]}]({url})"
 
 class Codecheck:
     """
@@ -66,8 +85,9 @@ class Codecheck:
                 base_dir
             )
 
-        # Only have one codechecker
-        self.conf['codechecker'] = self.conf['codechecker'][0]
+    def get_formatted_summary(self):
+        """Remove additional whitespaces and newline characters from the summary."""
+        return self.conf['summary'].strip().replace("\n", " ")
 
     def title(self):
         """
@@ -76,9 +96,9 @@ class Codecheck:
         directory.
         """
         return Markdown(
-            f"""# CODECHECK certificate {self.conf['certificate']}{{-}}
-## [{self.conf['report'].split('://')[1]}]({self.conf['report']}) {{-}}
-[![CODECHECK logo](codecheck_logo.png)](https://codecheck.org.uk)"""
+            f"""# CODECHECK certificate {self.conf['certificate']}
+## {url_link(self.conf['report'])}
+[![CODECHECK logo](codecheck_logo.svg)](https://codecheck.org.uk)"""
         )
 
     def summary_table(self):
@@ -92,12 +112,12 @@ Item | Value
 """
         summary_rows = [
             f"Title | *{self.conf['paper']['title']}*",
-            f"Authors | {', '.join([name_orcid(a) for a in self.conf['paper']['authors']])}",
-            f"Reference | [{self.conf['paper']['reference'].split('://')[1]}]({self.conf['paper']['reference']})",
-            f"Repository | [{self.conf['repository'].split('://')[1]}]({self.conf['repository']})",
-            f"Codechecker | {name_orcid(self.conf['codechecker'])}",
+            f"Author(s) | {multiple_name_orcid(self.conf['paper']['authors'])}",
+            f"Reference | {url_link(self.conf['paper']['reference'])}",
+            f"Repository | {url_link(self.conf['repository'])}",
+            f"Codechecker(s) | {multiple_name_orcid(self.conf['codechecker'])}",
             f"Date of check | {datetime.fromisoformat(self.conf['check_time']).date()}",
-            f"Summary | {self.conf['summary'].strip()}",
+            f"Summary | {self.get_formatted_summary()}",
         ]
         return Markdown(summary_header + "\n".join(summary_rows))
 
@@ -115,7 +135,7 @@ Item | Value
         # Note that the &nbsp; below are used to work around the fact that pandoc seems to
         # calculate the column width for the LaTeX output based on the length of the headers
         files_header = """
-File&nbsp;&nbsp;&nbsp; | Comment&nbsp;&nbsp;&nbsp;&nbsp;&nbsp | Size (b)
+File | Comment | Size (b)
 :--------------------- | :----------------------------------- | -------:
 """
         files_rows = [
@@ -135,17 +155,17 @@ File&nbsp;&nbsp;&nbsp; | Comment&nbsp;&nbsp;&nbsp;&nbsp;&nbsp | Size (b)
         """
         Markdown rendering of the `summary` field in `codecheck.yml`.
         """
-        return Markdown(self.conf["summary"].strip())
+        return Markdown(self.get_formatted_summary())
 
     def citation(self):
         """
         Markdown citation for this CODECHECK.
         """
         return Markdown(
-            f"{self.conf['codechecker']['name']} "
+            f"{multiple_name(self.conf['codechecker'])} "
             f"({datetime.fromisoformat(self.conf['check_time']).year}). "
             f"CODECHECK Certificate {self.conf['certificate']}. "
-            f"GitHub. [{self.conf['report'].split('://')[1]}]({self.conf['report']})"
+            f"Zenodo. {url_link(self.conf['report'])}"
         )
 
     def about_codecheck(self):
@@ -156,6 +176,16 @@ File&nbsp;&nbsp;&nbsp; | Comment&nbsp;&nbsp;&nbsp;&nbsp;&nbsp | Size (b)
             """
 This certificate confirms that the codechecker could independently reproduce the results of a computational analysis given the data and code from a third party. A CODECHECK does not check whether the original computation analysis is correct. However, as all materials required for the reproduction are freely availableby following the links in this document, the reader can then study for themselves the code and data."""
         )
+    
+    def session_info(self):
+        """
+        Markdown formatted session info
+        """
+        return Markdown(f"""```bash
+{si.session_info(os=True, cpu=True, gpu=True, dependencies=True)}
+```
+"""
+)
 
     def csv_files(self, **kwds):
         """
@@ -174,13 +204,12 @@ This certificate confirms that the codechecker could independently reproduce the
                 continue
             comment = entry.get("comment", None)
             df = pd.read_csv(op.join("outputs", fname), **kwds)
-            markdown = f"""### `{fname}` {{-}}
+            markdown = f"""### `{fname}`
 {('Author comment: *' + comment + '*') if comment else ' '}
 
 **Column summary statistics:**
 
-{df.describe().transpose().to_markdown(tablefmt="grid",
-                                               floatfmt=('.0f', '.0f', '.4f', '.4f', '.4f', '.4f', '.4f', '.4f', '.4f'))}
+{df.describe().transpose().to_markdown(floatfmt=('.0f', '.0f', '.4f', '.4f', '.4f', '.4f', '.4f', '.4f', '.4f'))}
 """
             full_markdown.append(markdown)
 
@@ -204,16 +233,15 @@ This certificate confirms that the codechecker could independently reproduce the
             if not op.splitext(fname)[1].lower() in extensions:
                 continue
             comment = entry["comment"]
+            heading = f"""### `{fname}`
+{('Author comment: *' + comment + '*') if comment else ' '}"""
             full_text.extend(
                 [
-                    r"\begin{figure}" r"\texttt{" + fname.replace("_", r"\_") + r"}.\\",
-                    r"Author comment: \emph{" + comment + r"}\\",
-                    r"\includegraphics{outputs/" + fname + r"}",
-                    r"\end{figure}",
+                    heading + r"![" + r"Author comment: " + comment + r"]" + r"(outputs/" + fname + r")",
                     "",
                 ]
             )
-        return Latex("\n".join(full_text))
+        return Markdown("\n".join(full_text))
 
     def validate(self, check_manifest=True, check_register=True, strict=False):
         """
@@ -344,3 +372,7 @@ This certificate confirms that the codechecker could independently reproduce the
             markdown += f"- `{entry['file']}` ({size_kb:.1f} KB)\n"
 
         return Markdown(markdown)
+    
+    def acknowledge_sponsors(self):
+        """The sponsoring acknowledgement."""
+        return Markdown("CODECHECK is financially supported by the Mozilla foundation.")

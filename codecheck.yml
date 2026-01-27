@@ -1,6 +1,6 @@
 ---
 version: https://codecheck.org.uk/spec/config/1.0/
-report: https://github.com/codecheckers/certificate-2025-026/
+report: https://codecheck.org.uk/register/certs/2025-026
 certificate: 2025-026
 
 paper:
@@ -21,8 +21,6 @@ manifest:
 codechecker:
   - name: Linus Dexter Hackel
     ORCID: 0009-0000-0114-8005
-  - name: Test Checker
-    ORCID: 0123-4567-8910-1112
     
 summary: |
   The check was not successfull so far as no Figure or Table could be reproduced, as most scripts provided are missing some input files, which aren't provided in the fishare repository.
