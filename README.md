@@ -33,6 +33,18 @@ If you want to use the checked code in your publications, please consider citing
 }
 ```
 
+If you want to reproduce the code yourself again, then first run the following command to build the Docker image:
+
+```bash
+docker build -f CodecheckDockerfile -t codecheck-2025-026 .
+```
+
+Next run the following command to start the docker container, from where all scripts can be executed.
+
+```bash
+docker run --rm -it -v "$PWD:/codecheck" -w /codecheck codecheck-2025-026
+```
+
 - - -
 
 # Route Instruction Generation and validation for TextWorld Environments
